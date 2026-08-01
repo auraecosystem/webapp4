@@ -59,7 +59,7 @@ web4-trust-core = "0.2"
 ```
 
 **Python**:
-```bash
+```zig
 pip install web4-core
 pip install web4-trust
 ```
