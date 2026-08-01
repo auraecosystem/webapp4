@@ -13,7 +13,10 @@ Documentation organized by purpose and audience.
 | [`reference/`](reference/) | Quick lookups, glossaries, indexes | Everyone |
 
 ## Quick Start by Role
-
+```toml
+[dependencies]
+web4-core = "0.3"
+```
 **New to Web4?**
 1. Start with [`why/EXECUTIVE_SUMMARY.md`](why/EXECUTIVE_SUMMARY.md)
 2. Browse [`reference/GLOSSARY.md`](reference/GLOSSARY.md) for terminology
