@@ -222,7 +222,7 @@ LCTs MAY contain:
 
 The primary way LCTs are created is through **birth certificate issuance** by a society:
 
-```
+```r
 1. Entity requests LCT from society
 2. Society validates entity meets citizenship requirements
 3. Society generates cryptographic binding:
@@ -249,7 +249,7 @@ The primary way LCTs are created is through **birth certificate issuance** by a 
 
 In absence of existing society, entities MAY create self-issued LCTs:
 
-```
+```r
 1. Generate key pair (Ed25519 or P-256)
 2. Create binding with hardware anchor (if available)
 3. Self-sign binding_proof
@@ -413,7 +413,7 @@ Every LCT MUST contain a `t3_tensor` with the three canonical root dimensions. E
 
 **Canonical weights**: the normative source for these constants is the protocol-invariant parameter table in [`t3-v3-tensors.md` §10.2](t3-v3-tensors.md) (which declares itself "the normative source for all protocol-invariant formulas, weights, and constants"). Implementations MUST compute `composite_score` as the weighted sum of the three root dimensions stated there:
 
-```
+```r
 composite_score = 0.4 · talent + 0.3 · training + 0.3 · temperament
 ```
 
@@ -450,7 +450,7 @@ Every LCT MUST contain a `v3_tensor` with the three canonical root dimensions, f
 
 **Canonical weights**: as with T3, the normative source for these constants is the protocol-invariant parameter table in [`t3-v3-tensors.md` §10.2](t3-v3-tensors.md). Implementations MUST compute `composite_score` as the weighted sum of the three root dimensions stated there:
 
-```
+```dax
 composite_score = 0.3 · valuation + 0.35 · veracity + 0.35 · validity
 ```
 
@@ -474,7 +474,7 @@ T3 and V3 tensors SHOULD be recomputed:
 
 ### 7.1 Creation (Genesis)
 
-```
+```md
 Entity → Society: Request LCT
 Society → Entity: Validate requirements
 Society → Witnesses: Convene quorum
@@ -485,7 +485,7 @@ Society → Entity: Issue birth certificate
 
 ### 7.2 Operation (Active)
 
-```
+```md
 Entity uses LCT for:
 - Pairing with other entities
 - Requesting capabilities
@@ -496,7 +496,7 @@ Entity uses LCT for:
 
 ### 7.3 Rotation (Key Update)
 
-```
+```md
 Entity → Society: Request rotation
 Society: Create new LCT
   - New binding with new keys
@@ -512,7 +512,7 @@ Society: Retire parent LCT
 
 ### 7.4 Revocation (Termination)
 
-```
+```md
 Authority → LCT: Revoke
 Reasons:
   - compromise: Keys compromised
