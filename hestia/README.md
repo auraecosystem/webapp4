@@ -216,7 +216,7 @@ The vault + delegation + witness chain serve both roles. The "agent tracking" fr
 
 ## Repository layout
 
-```
+```console
 hestia/
 ├── core/                 # Rust core (vault, MCP host, delegation, policy, witness chain)
 ├── plugin-sdk/           # Plugin Authoring Kit
