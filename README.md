@@ -71,7 +71,7 @@ Both crates and both Python packages are AGPL-3.0-or-later. Patent grant terms i
 Once installed, this is the smallest end-to-end path — create a presence, mint it to a hash-chained ledger, sign and verify, generate and verify an inclusion proof:
 
 **Python:**
-```python
+```pyi
 import web4_core
 
 # Create LCT (presence primitive) and an Ed25519 keypair
