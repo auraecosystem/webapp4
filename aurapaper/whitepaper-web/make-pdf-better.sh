@@ -1,0 +1,175 @@
+#!/bin/bash
+
+# make-pdf-better.sh - Generate PDF with TOC after Executive Summary
+# Usage: ./make-pdf-better.sh
+
+# Pull latest changes before building to avoid conflicts
+echo "Checking for updates..."
+git fetch
+
+# Check if we're behind the remote
+LOCAL=$(git rev-parse @)
+REMOTE=$(git rev-parse @{u})
+BASE=$(git merge-base @ @{u})
+
+if [ $LOCAL = $REMOTE ]; then
+    echo "Already up to date."
+elif [ $LOCAL = $BASE ]; then
+    echo "Pulling latest changes..."
+    git pull
+else
+    echo "❌ Error: Your branch has diverged from the remote branch."
+    echo "Please resolve conflicts manually before building:"
+    echo "  1. Review changes with: git status"
+    echo "  2. Either stash your changes: git stash"
+    echo "  3. Or commit them: git add . && git commit -m 'your message'"
+    echo "  4. Then pull: git pull"
+    echo "  5. Run this script again"
+    exit 1
+fi
+
+echo "Building Web4 whitepaper PDF with improved layout..."
+
+OUTPUT_DIR="build"
+MD_FILE="$OUTPUT_DIR/WEB4_Whitepaper_Complete.md"
+PDF_FILE="$OUTPUT_DIR/WEB4_Whitepaper.pdf"
+TEMP_MD="$OUTPUT_DIR/WEB4_Whitepaper_Reordered.md"
+
+# Create build directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# First, ensure we have the markdown file
+if [ ! -f "$MD_FILE" ]; then
+    echo "Markdown file not found. Running make-md.sh first..."
+    ./make-md.sh
+fi
+
+# Check for pandoc
+if ! command -v pandoc &> /dev/null; then
+    echo "Error: pandoc is required for PDF generation"
+    echo "Install with: sudo apt-get install pandoc texlive-xetex"
+    exit 1
+fi
+
+# Reorder the document to put TOC after Executive Summary
+echo "Reordering document structure..."
+python3 << 'PYTHON_SCRIPT'
+import re
+
+# Read the complete markdown
+with open('build/WEB4_Whitepaper_Complete.md', 'r') as f:
+    content = f.read()
+
+# Split into sections
+lines = content.split('\n')
+sections = []
+current_section = []
+current_title = ""
+
+for line in lines:
+    if line.startswith('# '):
+        if current_section:
+            sections.append((current_title, '\n'.join(current_section)))
+        current_title = line
+        current_section = [line]
+    else:
+        current_section.append(line)
+
+# Add the last section
+if current_section:
+    sections.append((current_title, '\n'.join(current_section)))
+
+# Find the opening section (Why Web4) — it goes on the title page, before the TOC
+opening = None
+other_sections = []
+
+for title, content in sections:
+    if 'Why Web4' in title:
+        opening = (title, content)
+    else:
+        other_sections.append((title, content))
+
+# Rebuild document with custom order
+with open('build/WEB4_Whitepaper_Reordered.md', 'w') as f:
+    # Start with title and the Why Web4 opening on the same page
+    f.write('# WEB4: A Technical Introduction\n\n')
+    f.write('*The trust-native internet, explained through its canonical equation*\n\n')
+    f.write('*Dennis Palatov, GPT4o, Deepseek, Grok, Claude, Gemini, Manus*\n\n')
+    f.write('*July 2026*\n\n')
+    f.write('---\n\n')
+
+    # Why Web4 (demoted to ## since we have the main title above)
+    if opening:
+        opening_content = opening[1].replace('# Why Web4', '## Why Web4')
+        f.write(opening_content + '\n\n')
+
+    # Add TOC on new page
+    f.write('\\newpage\n\n')
+    f.write('\\tableofcontents\n\n')
+    f.write('\\newpage\n\n')
+
+    # All other sections (skip the title section we already handled)
+    for title, content in other_sections:
+        if 'WEB4:' not in title:
+            f.write(content + '\n\n')
+
+print("✓ Document reordered")
+PYTHON_SCRIPT
+
+# Generate PDF with pandoc
+echo "Generating PDF..."
+pandoc "$TEMP_MD" -o "$PDF_FILE" \
+    --from markdown+raw_tex \
+    --to pdf \
+    --pdf-engine=xelatex \
+    --toc-depth=3 \
+    --highlight-style=tango \
+    -V documentclass=article \
+    -V geometry:margin=1in \
+    -V fontsize=11pt \
+    -V linkcolor=blue \
+    -V urlcolor=blue \
+    -V toccolor=black \
+    -V colorlinks=true \
+    2>/dev/null
+
+if [ -f "$PDF_FILE" ]; then
+    echo "✅ PDF created with TOC after Executive Summary: $PDF_FILE"
+    echo ""
+    echo "📊 PDF Statistics:"
+    echo "   Size: $(du -h $PDF_FILE | cut -f1)"
+    echo "   Location: $PDF_FILE"
+    
+    # Clean up temp file
+    rm -f "$TEMP_MD"
+else
+    echo "❌ PDF generation failed"
+    echo "Falling back to standard generation..."
+    
+    # Fallback to original method
+    pandoc "$MD_FILE" -o "$PDF_FILE" \
+        --from markdown \
+        --to pdf \
+        --pdf-engine=xelatex \
+        --toc \
+        --toc-depth=3 \
+        --highlight-style=tango \
+        -V geometry:margin=1in \
+        -V fontsize=11pt
+    
+    if [ -f "$PDF_FILE" ]; then
+        echo "✅ PDF created (standard layout): $PDF_FILE"
+    fi
+fi
+
+# Copy to docs/whitepaper-web for GitHub Pages access
+if [ -f "$PDF_FILE" ]; then
+    DOCS_DIR="../docs/whitepaper-web"
+    if [ ! -d "$DOCS_DIR" ]; then
+        mkdir -p "$DOCS_DIR"
+        echo "📁 Created docs/whitepaper-web directory"
+    fi
+    
+    cp "$PDF_FILE" "$DOCS_DIR/"
+    echo "📄 Copied PDF to GitHub Pages location: $DOCS_DIR/WEB4_Whitepaper.pdf"
+fi
