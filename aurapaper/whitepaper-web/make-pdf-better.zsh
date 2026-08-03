@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# make-pdf-better.sh - Generate PDF with TOC after Executive Summary
+# make-pdf-better.zsh - Generate PDF with TOC after Executive Summary
 # Usage: ./make-pdf-better.sh
 
 # Pull latest changes before building to avoid conflicts
