@@ -443,7 +443,7 @@ Operators: `[]` = "contains", `/` = "verified by", `*` = "contextualized by", `+
 
 **Fine-grained delegation** with enforcement:
 
-```
+```md
 Example: Agent purchasing with constraints
 - Daily budget limits
 - Per-transaction limits
