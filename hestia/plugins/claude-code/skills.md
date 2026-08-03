@@ -1,0 +1,14 @@
+> hestia/
+├── core/                 # Rust core (vault, MCP host, delegation, policy, witness chain)
+├── plugin-sdk/           # Plugin Authoring Kit
+│   ├── rust/             # hestia-plugin-sdk (crates.io)
+│   ├── typescript/       # @hestia-tools/plugin-sdk (npm)
+│   └── python/           # hestia-plugin-sdk (PyPI)
+├── plugins/              # First-party plugin implementations
+│   ├── claude-code/      # Claude Code witness + policy hooks
+│   └── openclaw/         # OpenClaw integrationo
+├── hardbound-pak/        # Enterprise trait contracts (TPM/YubiKey/SE)
+├── app/                  # Tauri 2 cross-platform app — the primary human interface
+├── docs/                 # Architecture, plugin guide, ADRs
+│   └── DESIGN_DECISIONS/ # ADR-style decision records
+└── demo/                 # Worked examples (consumer + enterprise)
