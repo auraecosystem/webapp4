@@ -17,3 +17,8 @@ python attack_track_fb.py                  # Trust manipulation attacks
 python attack_track_fc.py                  # Economic attacks
 
 # For full 4-Life game demos, see: https://github.com/dp-web4/4-life
+cd hub
+hub init <name> --sovereign-lct <path>   # found a society: charter + genesis
+hub init-law                             # write a starter hub-law template
+hub serve <hub-dir>                      # run the daemon: witnessed ledger, sealed channels, law gate
+# or, turnkey: hub up ./hub --profile public-tunnel --domain hub.4-gov.org
